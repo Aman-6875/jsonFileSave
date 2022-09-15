@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\JsonFileController;
+use App\Models\JsonData;
 use Illuminate\Support\Facades\Route;
-
+// use Datatables;
+// use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,6 +17,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-Route::post('/get-json', [JsonFileController::class, 'getFile']);
+    if (request()->ajax()) {
+        $data = JsonData::select('*');
+        return datatables()->of($data)
+            ->addIndexColumn()
+            ->make(true);
+    }
+    return view('view');
+})->name('home');
+Route::post('/get-json', [JsonFileController::class, 'getFile'])->name('storeData');
